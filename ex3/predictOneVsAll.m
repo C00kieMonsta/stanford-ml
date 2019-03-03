@@ -30,7 +30,16 @@ X = [ones(m, 1) X];
 %       for each row.
 %       
 
-p = max(sigmoid(X*all_theta'), [], 2);
+% m x n  = 5000 x 10
+h = sigmoid(X*all_theta');
+
+% We have to pick the class for which the corresponding logistic regression
+% classifier outputs the highest probability
+% this is a 5000 x 1 matrix, since we get the max val for each row
+[values, indices] = max(h, [], 2);
+
+% The predictions here is the index of the class, so we return the indices which corresponds to the class
+p = indices;
 
 % =========================================================================
 

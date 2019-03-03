@@ -19,6 +19,8 @@
 %% Initialization
 clear ; close all; clc
 
+setenv('GNUTERM','qt');
+
 %% Setup the parameters you will use for this exercise
 input_layer_size  = 400;  % 20x20 Input Images of Digits
 hidden_layer_size = 25;   % 25 hidden units

@@ -21,13 +21,28 @@ p = zeros(size(X, 1), 1);
 %       can use max(A, [], 2) to obtain the max for each row.
 %
 
+% We have to add a vector of ones to X for the bias part x0
 
+% Input layer
+a0_1 = ones(m, 1);
+A_1 = [a0_1, X];
 
+% Hidden layer
+a0_2 = ones(m, 1);
+Z_2 = A_1 * Theta1';
+A_2 = [a0_2, sigmoid(Z_2)];
 
+% Output layer
+Z_3 = A_2 * Theta2';
+h = sigmoid(Z_3);
 
+% We have to pick the class for which the corresponding logistic regression
+% classifier outputs the highest probability
+% this is a 5000 x 1 matrix, since we get the max val for each row
+[values, indices] = max(h, [], 2);
 
-
-
+% The predictions here is the index of the class, so we return the indices which corresponds to the class
+p = indices;
 
 % =========================================================================
 
