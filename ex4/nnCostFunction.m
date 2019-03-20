@@ -63,21 +63,50 @@ Theta2_grad = zeros(size(Theta2));
 %
 
 
+%% PART 1 - Feedforward and Cost Function %%
+
+% based on y, which is a 5000x1 matrix , we recreate a 5000x10 matrix that takes
+% 5000 rows of 10x1 vectors. We need to recode the labels as vectors containing only values 0 or 1
+I = eye(num_labels);
+Y = zeros(m, num_labels);
+for i=1:m
+  Y(i, :) = I(y(i), :);
+end
+
+% Input layer
+a0_1 = ones(m, 1);
+A_1 = [a0_1, X];
+
+% Hidden layer
+a0_2 = ones(m, 1);
+Z_2 = A_1 * Theta1';
+A_2 = [a0_2, sigmoid(Z_2)];
+
+% Output layer
+Z_3 = A_2 * Theta2';
+h = sigmoid(Z_3);
+
+% unregularized cost function
+J = (1/m)*sum(sum((-Y).*log(h) - (1-Y).*log(1-h)));
 
 
+%% PART 2 - BackProp %%
+% new theta without zero index Theta
+tmp_theta_1 = Theta1(2:size(Theta1));
+tmp_theta_2 = Theta2(2:size(Theta2));
 
+d_3 = h - Y;
+d_2 = (d_3*Theta2 .* sigmoidGradient([ones(size(Z_2, 1), 1) Z_2]))(:, 2:end);
 
+D_1 = d_2'*A_1;
+D_2 = d_3'*A_2;
 
+Theta1_grad = D_1./m + lambda*Theta1;
+Theta2_grad = D_2./m + lambda*Theta2;
 
+%% PART 3 - Regularized Cost Function %%
 
-
-
-
-
-
-
-
-
+J = J + lambda/(2*m) * (sum(tmp_theta_1.^2) + sum(tmp_theta_2.^2));
 
 
 % -------------------------------------------------------------
