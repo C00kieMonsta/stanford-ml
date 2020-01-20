@@ -21,6 +21,10 @@ p = zeros(size(X, 1), 1);
 %       can use max(A, [], 2) to obtain the max for each row.
 %
 
+% Why do we implement another algorithm for classifying handwritten numbers?  Is multi-class logistic regression not sufficient?
+% Logistic regression cannot form more complex hypotheses as it is only a linear classiﬁer. You could add more features
+% (such as polynomial features) to logistic regression, but that can be very expensive to train
+
 % We have to add a vector of ones to X for the bias part x0
 
 % Input layer

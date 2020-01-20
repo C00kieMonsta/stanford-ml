@@ -30,16 +30,28 @@ X = [ones(m, 1) X];
 %       for each row.
 %       
 
-% m x n  = 5000 x 10
+% My classifiers have been trained, now I want to predict the class to which 
+
+% X is m x n matrix = 5000 x 10
+% all_theta is a n x num_labels matrix
+% X * all_theta becomes a m x num_labels matrix
 h = sigmoid(X*all_theta');
 
 % We have to pick the class for which the corresponding logistic regression
 % classifier outputs the highest probability
 % this is a 5000 x 1 matrix, since we get the max val for each row
+% Let is do it for the first row of what has been predicted with the logistic regression
+%  >> row_1 = h(1, :)
+%  >> [val, index] = max(row_1, [], 2)
+% Running both commands above would give you the max among all values from the first row,
+% as well as the index of where the value was found. Why index? To match the class it belongs to
+% or here to simply match the number it predicted. If index is 10 and val is 97%, it means that
+% the regression predicts that the written number should correspond do the number 10 with proba of 97%
 [values, indices] = max(h, [], 2);
 
 % The predictions here is the index of the class, so we return the indices which corresponds to the class
 p = indices;
+
 
 % =========================================================================
 

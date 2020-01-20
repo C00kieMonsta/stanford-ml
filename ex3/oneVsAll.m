@@ -49,15 +49,23 @@ X = [ones(m, 1) X];
 %                 initial_theta, options);
 %
 
-
 % Set Initial theta
 initial_theta = zeros(n + 1, 1);
 
 % Set options for fminunc
 options = optimset('GradObj', 'on', 'MaxIter', 50);
 
+% looping throug all our classes/labels and fit a new classifier
 for index = 1:num_labels,
-    [theta] = fmincg(@(t)(lrCostFunction(t, X, (y == index), lambda)), initial_theta, options);
+    % transforming muti-class y into binary classification
+    % where index belongs to the positive class (y = 1) and the rest belongs to the negative class (y = 0)
+    label_obs = (y == index);
+
+    % training paramters for classifier at index
+    [theta] = fmincg(@(t)(lrCostFunction(t, X, label_obs, lambda)), initial_theta, options);
+
+    % append new parameters Theta to form parameters matrix for all labels
+    % the idea is to end up with num_labels classifiers h
     all_theta(index, :) = theta';
 end
 

@@ -42,11 +42,13 @@ h = sigmoid(X*theta);
 % new theta without zero index Theta
 tmp_theta = theta(2:size(theta));
 
-% regularized cost function
-J = 1/(m) * sum(-y'*log(h) - (1 .- y)'*log(1 - h)) + lambda/(2*m) * sum(tmp_theta.^2);
+% vectorized regularized cost function
+J = (1/m) * (-y' * log(h) - (1 .- y)' * log(1 - h)) + lambda/(2*m) .* tmp_theta'*tmp_theta;
 
 % vectorized way of computing gradients
-grad = (1/m)*(X'*(h-y)+lambda*[0; tmp_theta]);
+% X is m x n matrix and (h-y) is m x 1  => (m x n)' * (m x n) = (n x 1)
+% this matches the size of gradient function which should equal n x 1 where n is number of feature
+grad = (1/m) * (X' * (h-y) + lambda * [0; tmp_theta]);
 
 % =============================================================
 
