@@ -14,6 +14,11 @@ function [J grad] = nnCostFunction(nn_params, ...
 %   partial derivatives of the neural network.
 %
 
+% reshape([1, 2, 3, 4, 5, 3], 3, 2)
+% ans = 1   4
+%       2   5
+%       3   3
+
 % Reshape nn_params back into the parameters Theta1 and Theta2, the weight matrices
 % for our 2 layer neural network
 Theta1 = reshape(nn_params(1:hidden_layer_size * (input_layer_size + 1)), ...
@@ -62,16 +67,11 @@ Theta2_grad = zeros(size(Theta2));
 %               and Theta2_grad from Part 2.
 %
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% PART 1  - Feedforward and Cost Function
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-%% PART 1 - Feedforward and Cost Function %%
-
-% based on y, which is a 5000x1 matrix , we recreate a 5000x10 matrix that takes
-% 5000 rows of 10x1 vectors. We need to recode the labels as vectors containing only values 0 or 1
-I = eye(num_labels);
-Y = zeros(m, num_labels);
-for i=1:m
-  Y(i, :) = I(y(i), :);
-end
+%% 1// FEEDFORWARD
 
 % Input layer
 a0_1 = ones(m, 1);
@@ -86,27 +86,70 @@ A_2 = [a0_2, sigmoid(Z_2)];
 Z_3 = A_2 * Theta2';
 h = sigmoid(Z_3);
 
-% unregularized cost function
+%% 2// COST FUNCTION (unregularized)
+
+% Based on y, which is a 5000x1 matrix , we recreate a 5000x10 matrix that takes
+% 5000 rows of 10x1 vectors. We need to recode the labels as vectors containing only values 0 or 1
+% In other words, I want to transalte my lowercase "y" vector (m x 1) into a matrix of 0's and 1's
+% of size (m x 10)
+% To do so, we start with a 10 x 10 Identity matrix that will be used the right sequence of numbers to
+% the Y matrix. (eg: y(423) = 9, this transaltes into [0 0 0 0 0 0 0 0 1 0] vector, where the 1 is at the 
+% ninth position)
+
+% 10 x 10 Identity metrix => 10 because there are 10 digits 0,1,2,3,4,5,6...9
+%
+%   1 0 0 0 0 0 0 0 0 0
+%   0 1 0 0 0 0 0 0 0 0
+%   0 0 1 0 0 0 0 0 0 0
+%   ...
+% matrix to indicate the position of the number
+I = eye(num_labels);
+
+% m x 10 placehodler matrix of zeroes
+% We will iterate over m-rows from the y vector (m x 1) and assign a row from the Identity matrix
+% that corresponds to the digit.
+Y = zeros(m, num_labels);
+
+% Say that y = [5 2 2 1 2 4 5 1 2 3 4 5 5]
+%
+%   For i from 1 -> 5000:
+%     i = 1:
+%       y(1) = 5;
+%       identity_row_at_index_y = I(5, :);
+%       Y(1, :)  = identity_row_at_index_y; // here we assign 0 0 0 0 1 0 0 0 0 0 to matrix Y
+%
+% This results in a copy of y vector into a matrix
+for i = 1:m
+  Y(i, :) = I(y(i), :);
+end
+
 J = (1/m)*sum(sum((-Y).*log(h) - (1-Y).*log(1-h)));
 
 
-%% PART 2 - BackProp %%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% PART 2 - BackProp
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%% 1// COST FUNCTION (regularized)
+
 % new theta without zero index Theta
-tmp_theta_1 = Theta1(2:size(Theta1));
-tmp_theta_2 = Theta2(2:size(Theta2));
+tmp_theta_1 = Theta1(:,2:end);
+tmp_theta_2 = Theta2(:,2:end);
+
+reg_term = lambda/(2*m) * (sum(sum(tmp_theta_1.^2)) + sum(sum(tmp_theta_2.^2)));
+
+J = J + reg_term;
+
+%% 2// COMPUTE DELTA's
 
 d_3 = h - Y;
-d_2 = (d_3*Theta2 .* sigmoidGradient([ones(size(Z_2, 1), 1) Z_2]))(:, 2:end);
+d_2 = (d_3 * Theta2)(:,2:end) .* sigmoidGradient(Z_2);
 
 D_1 = d_2'*A_1;
 D_2 = d_3'*A_2;
 
 Theta1_grad = D_1./m + lambda*Theta1;
 Theta2_grad = D_2./m + lambda*Theta2;
-
-%% PART 3 - Regularized Cost Function %%
-
-J = J + lambda/(2*m) * (sum(tmp_theta_1.^2) + sum(tmp_theta_2.^2));
 
 
 % -------------------------------------------------------------
