@@ -148,9 +148,16 @@ d_2 = (d_3 * Theta2)(:,2:end) .* sigmoidGradient(Z_2);
 D_1 = d_2'*A_1;
 D_2 = d_3'*A_2;
 
-Theta1_grad = D_1./m + lambda*Theta1;
-Theta2_grad = D_2./m + lambda*Theta2;
+%% 3// GRADIENT (unregularized)
+Theta1_grad = D_1./m;
+Theta2_grad = D_2./m;
 
+%% 4// GRADIENT (unregularized)
+reg_1 = (lambda / m) .* tmp_theta_1;
+Theta1_grad(:, 2:end) = Theta1_grad(:, 2:end) + reg_1;
+
+reg_2 = (lambda / m) .* tmp_theta_2;
+Theta2_grad(:, 2:end) = Theta2_grad(:, 2:end) + reg_2;
 
 % -------------------------------------------------------------
 
