@@ -23,10 +23,23 @@ sigma = 0.3;
 %        mean(double(predictions ~= yval))
 %
 
+suggestions = [0.01,0.03,0.1,0.3,1,3,10,30];
 
+error = 1; % cannot be larger than one, here we assume a 100% error
 
+for C_tmp=suggestions
+    for sigma_tmp=suggestions
+        svm_tmp_model = svmTrain(X, y, C_tmp, @(x1, x2) gaussianKernel(x1, x2, sigma_tmp));
+        predictions = svmPredict(svm_tmp_model, Xval); % vector with all predictions
+        prediction_error = mean(double(predictions ~= yval)); % compare prediction with real values
 
-
+        if prediction_error < error
+            error = prediction_error;
+            C = C_tmp;
+            sigma = sigma_tmp;
+        end
+    end
+end
 
 
 % =========================================================================
