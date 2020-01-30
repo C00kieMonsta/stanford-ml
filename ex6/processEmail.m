@@ -90,21 +90,24 @@ while ~isempty(email_contents)
     %               'action', then, you should add 18 to the word_indices 
     %               vector (e.g., word_indices = [word_indices ; 18]; ).
     % 
-    % Note: vocabList{idx} returns a the word with index idx in the
+    % Note: vocabList{idx} returns a word with index idx in the
     %       vocabulary list.
     % 
     % Note: You can use strcmp(str1, str2) to compare two strings (str1 and
     %       str2). It will return 1 only if the two strings are equivalent.
     %
 
+    %% We want to compare all words from our email with the vocabList words
+    %% If a word is present we add the index of the vocabList to a word_indices list
+    %% this word_indices keeps all indeces of word present in the vocabList
 
-
-
-
-
-
-
-
+    length_vocabList = length(vocabList);
+    
+    for i=1:length_vocabList       
+        if (strcmp(vocabList{i}, str))
+            word_indices = [word_indices ; i];
+        end
+    end
 
     % =============================================================
 
